@@ -4,15 +4,58 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sketch</title>
+    <title>data visualization - assignment 1</title>
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   </head>
 
   <body>
+     <div class="container">
+        <h1>data analysis dashboard</h1>
+        <p class="subtitle">statistical analysis of filtered dataset</p>
+         <div class="grid">
+            <!-- rapp 1 - LISTA TESTUALE -->
+            <div class="card">
+                <h2>statistical summary</h2>
+                <ul class="stats-list" id="statsList"></ul>
+            </div>
+
+            <!-- rapp 2 - TABELLA TESTUALE -->
+            <div class="card">
+                <h2>detailed table</h2>
+                <div class="table-container">
+                    <table id="statsTable"></table>
+                </div>
+            </div>
+
+            <!-- rapp 3 - GRAFICO A BARRE -->
+            <div class="card">
+                <h2>bar chart</h2>
+                <div id="barChart"></div>
+            </div>
+
+            <!-- rapp 4 - GRAFICO A TORTA -->
+            <div class="card">
+                <h2>pie chart</h2>
+                <div id="pieChart"></div>
+            </div>
+
+            <!-- rapp 5 - BUBBLE CHART INTERATTIVO -->
+            <div class="card">
+                <h2>interactive bubbles</h2>
+                <div id="customViz"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+
     <script src="sketch.js"></script>
+    <script src="visualizations.js"></script>
   </body>
 </html>
