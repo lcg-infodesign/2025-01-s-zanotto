@@ -10,52 +10,188 @@
 
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- font -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- libreria p5.js per visualizzazioni -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <!-- libreria chart.js per i grafici -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
   </head>
 
   <body>
-     <div class="container">
-        <h1>data analysis dashboard</h1>
-        <p class="subtitle">statistical analysis of filtered dataset</p>
-         <div class="grid">
-            <!-- rapp 1 - LISTA TESTUALE -->
-            <div class="card">
-                <h2>statistical summary</h2>
-                <ul class="stats-list" id="statsList"></ul>
-            </div>
+     <!-- container principale -->
+    <div class="container">
+        
+        <!-- titolo principale -->
+        <h1 class="main-title">ANALISI DATI CSV</h1>
+        
+        <!-- box 1: risultati validazione dati -->
+        <div class="box validation-box">
+            <h2 class="box-title">✓ RISULTATI VALIDAZIONE DATI</h2>
+            <p class="validation-text">
+                <strong>RIGHE VALIDE TROVATE:</strong> 
+                <span id="validCount" class="big-number">14</span>
+            </p>
+            <p class="small-text">REGOLE APPLICATE:</p>
+            <ul class="rules-list">
+                <li>▸ colonna 3: valore intero dove 30 ≤ x &lt; 42</li>
+                <li>▸ colonna 3: deve essere multiplo di 3</li>
+            </ul>
+            <p class="info-badge">✓ TUTTE LE STATISTICHE CALCOLATE SOLO SU RIGHE VALIDE</p>
+        </div>
 
-            <!-- rapp 2 - TABELLA TESTUALE -->
-            <div class="card">
-                <h2>detailed table</h2>
-                <div class="table-container">
-                    <table id="statsTable"></table>
+        <!-- box 2: riepilogo statistico -->
+        <div class="box stats-box">
+            <h2 class="box-title">RIEPILOGO STATISTICO</h2>
+            <div class="stats-grid">
+                <!-- card media colonna 0 -->
+                <div class="stat-card stat-card-purple">
+                    <p class="stat-label">MEDIA COLONNA 0</p>
+                    <p class="stat-value" id="meanCol0">0.00</p>
+                </div>
+                
+                <!-- card deviazione standard colonna 1 -->
+                <div class="stat-card stat-card-green">
+                    <p class="stat-label">DEV.STD COLONNA 1</p>
+                    <p class="stat-value" id="stdDevCol1">0.00</p>
+                </div>
+                
+                <!-- card moda colonna 2 -->
+                <div class="stat-card stat-card-yellow">
+                    <p class="stat-label">MODA COLONNA 2</p>
+                    <p class="stat-value" id="modeCol2">0.00</p>
+                </div>
+                
+                <!-- card mediana colonna 3 -->
+                <div class="stat-card stat-card-orange">
+                    <p class="stat-label">MEDIANA COLONNA 3</p>
+                    <p class="stat-value" id="medianCol3">0.00</p>
+                </div>
+                
+                <!-- card statistiche colonna 4 (occupa 2 colonne) -->
+                <div class="stat-card stat-card-blue stat-card-wide">
+                    <p class="stat-label">STATISTICHE COLONNA 4</p>
+                    <p class="stat-value-small">
+                        MEDIA: <span id="meanCol4">0.00</span> | 
+                        DEV.STD: <span id="stdDevCol4">0.00</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- box 3: grafico a barre -->
+        <div class="box chart-box">
+            <h2 class="box-title">GRAFICO A BARRE</h2>
+            <canvas id="barChart"></canvas>
+        </div>
+
+        <!-- box 4: grafico a torta -->
+        <div class="box chart-box">
+            <h2 class="box-title">GRAFICO A TORTA</h2>
+            <canvas id="pieChart"></canvas>
+        </div>
+
+        <!-- box 5: tabella righe valide -->
+        <div class="box table-box">
+            <h2 class="box-title">TUTTE LE RIGHE VALIDE (14 TOTALI)</h2>
+            <div class="table-container">
+                <table id="validRowsTable">
+                    <thead>
+                        <tr>
+                            <th>COL 0</th>
+                            <th>COL 1</th>
+                            <th>COL 2</th>
+                            <th class="col3-header">COL 3</th>
+                            <th>COL 4</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- le righe verranno inserite da java -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- box 6: data explorer interattivo -->
+        <div class="box explorer-box">
+            <h2 class="box-title">DATA EXPLORER INTERATTIVO</h2>
+            <p class="explorer-description">
+                ESPLORA I DATI IN MODO INTERATTIVO! PUOI ORDINARE PER COLONNA, 
+                FILTRARE I VALORI E EVIDENZIARE RIGHE SPECIFICHE.
+            </p>
+            
+            <!-- pannello di controllo -->
+            <div class="control-panel">
+                <h3 class="control-title">PANNELLO DI CONTROLLO</h3>
+                
+                <!-- sezione ordinamento -->
+                <div class="control-section">
+                    <p class="control-label">ORDINA PER:</p>
+                    <div class="button-group">
+                        <button class="control-btn" onclick="sortData('column0')">COL 0</button>
+                        <button class="control-btn" onclick="sortData('column1')">COL 1</button>
+                        <button class="control-btn" onclick="sortData('column2')">COL 2</button>
+                        <button class="control-btn" onclick="sortData('column3')">COL 3</button>
+                        <button class="control-btn" onclick="sortData('column4')">COL 4</button>
+                        <button class="control-btn btn-reset" onclick="resetSort()">RESET</button>
+                    </div>
+                </div>
+                
+                <!-- sezione filtri -->
+                <div class="control-section">
+                    <p class="control-label">FILTRA:</p>
+                    <div class="button-group">
+                        <button class="control-btn btn-filter" onclick="filterData('all')">TUTTI (14)</button>
+                        <button class="control-btn btn-filter" onclick="filterData('col0-positive')">COL0 +</button>
+                        <button class="control-btn btn-filter" onclick="filterData('col0-negative')">COL0 -</button>
+                        <button class="control-btn btn-filter" onclick="filterData('col4-positive')">COL4 +</button>
+                        <button class="control-btn btn-filter" onclick="filterData('col4-negative')">COL4 -</button>
+                    </div>
+                </div>
+                
+                <!-- sezione evidenzia -->
+                <div class="control-section">
+                    <p class="control-label">EVIDENZIA:</p>
+                    <div class="button-group">
+                        <button class="control-btn btn-highlight-mean" onclick="highlightMean()">MEDIA COL0</button>
+                        <button class="control-btn btn-highlight-mode" onclick="highlightMode()">MODA COL2</button>
+                        <button class="control-btn btn-reset" onclick="removeHighlight()">RIMUOVI</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- rapp 3 - GRAFICO A BARRE -->
-            <div class="card">
-                <h2>bar chart</h2>
-                <div id="barChart"></div>
+            <!-- info righe visualizzate -->
+            <div class="info-box">
+                <strong>RIGHE VISUALIZZATE:</strong> 
+                <span id="displayedCount">14</span> / <span id="totalCount">14</span>
+                <span id="highlightedInfo" class="highlighted-info"></span>
             </div>
 
-            <!-- rapp 4 - GRAFICO A TORTA -->
-            <div class="card">
-                <h2>pie chart</h2>
-                <div id="pieChart"></div>
-            </div>
-
-            <!-- rapp 5 - BUBBLE CHART INTERATTIVO -->
-            <div class="card">
-                <h2>interactive bubbles</h2>
-                <div id="customViz"></div>
+            <!-- tabella interattiva -->
+            <div class="table-container">
+                <table id="explorerTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortData('column0')">COL 0</th>
+                            <th onclick="sortData('column1')">COL 1</th>
+                            <th onclick="sortData('column2')">COL 2</th>
+                            <th class="col3-header" onclick="sortData('column3')">COL 3</th>
+                            <th onclick="sortData('column4')">COL 4</th>
+                        </tr>
+                    </thead>
+                    <tbody id="explorerTableBody">
+                        <!-- le righe verranno inserite da java -->
+                    </tbody>
+                </table>
             </div>
         </div>
+
     </div>
 
 
 
 
+
     <script src="sketch.js"></script>
-    <script src="visualizations.js"></script>
   </body>
 </html>
